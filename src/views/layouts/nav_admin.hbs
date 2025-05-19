@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gestión Vehicular</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: #f9fafb;
+      color: #111827;
+    }
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 240px;
+      background-color: #1f2937;
+      color: #e5e7eb;
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      height: 100vh;
+    }
+    .sidebar .brand {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .sidebar .brand img {
+      width: 50px;
+    }
+    .sidebar .brand h5 {
+      margin: 0.5rem 0 0;
+      color: white;
+      font-weight: 700;
+    }
+    .sidebar .nav-link {
+      color: #cbd5e1;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      transition: background 0.2s ease;
+    }
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+      background-color: #2563eb;
+      color: #fff;
+      font-weight: 600;
+    }
+    .content {
+      margin-left: 240px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .topbar {
+      background-color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .main {
+      padding: 2rem;
+      overflow-y: auto;
+    }
+    .card-custom {
+      background-color: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+    .avatar img {
+      width: 100%;
+      height: auto;
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        left: -240px;
+        position: fixed;
+        transition: left 0.3s ease;
+        z-index: 2000;
+      }
+      .sidebar.open {
+        left: 0;
+      }
+      .content {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- Sidebar -->
+    <nav id="sidebar" class="sidebar">
+      <div class="brand">
+        <img src="imagenes/logo pestaña.PNG" alt="Logo Vianco">
+        <h5>VIANCO</h5>
+        <small class="text-muted">Panel Administrativo</small>
+      </div>
+      <ul class="nav flex-column">
+        <li><a href="/menu" class="nav-link"><i class="fas fa-arrow-left"></i> Volver</a></li>
+        <li><a href="/consultar_vehiculo" class="nav-link"><i class="fas fa-users-cog"></i> Usuarios Admin</a></li>
+        <li><a href="/consultar_conductor" class="nav-link"><i class="fas fa-user-graduate"></i> Usuarios Cursos</a></li>
+        <li><a href="/control_pagos" class="nav-link"><i class="fas fa-coins"></i> Pagos</a></li>
+        <li><a href="/contenidos" class="nav-link"><i class="fas fa-folder-open"></i> Contenidos</a></li>
+        <li class="mt-auto"><a href="/logout" class="nav-link text-danger"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a></li>
+      </ul>
+    </nav>
+
+    <!-- Content -->
+    <div class="content">
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="d-flex align-items-center gap-3">
+          <button class="btn btn-outline-secondary d-md-none" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+          </button>
+          <h6 class="mb-0 fw-semibold text-primary">Gestión Vehicular</h6>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <button class="btn btn-light border rounded-circle p-2" onclick="toggleTheme()" title="Cambiar tema">
+            <i class="fas fa-moon"></i>
+          </button>
+          <div class="dropdown">
+            <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <div class="avatar me-2">
+                <img src="imagenes/logo pestaña.PNG" alt="Avatar">
+              </div>
+              <span class="d-none d-md-inline fw-medium">{{name}}</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
+              <li><a class="dropdown-item" href="/perfil"><i class="fas fa-user me-2 text-primary"></i> Perfil</a></li>
+              <li><a class="dropdown-item" href="/configuracion"><i class="fas fa-cog me-2 text-secondary"></i> Configuración</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt me-2"></i> Cerrar sesión</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main -->
+      <div class="main">
+        <div class="card-custom">{{{body}}}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('open');
+    }
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+    }
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    });
+  </script>
+</body>
+</html>

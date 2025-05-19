@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Plataforma de Cursos</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+  <!-- Favicon & PWA -->
+  <link rel="icon" href="../../imagenes/Recurso 1hdpi.png" type="image/x-icon"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; }
+  </style>
+</head>
+<body class="relative antialiased text-gray-800 h-full">
+
+  <!-- Fondo dinámico completo ocupando toda la pantalla -->
+  <div id="bg" class="fixed inset-0 w-screen h-screen bg-cover bg-center bg-no-repeat z-[-10]"
+       style="background-image:url('imagenes/fondocurso.png')">
+  </div>
+
+  <!-- Header -->
+  <header class="fixed top-0 left-0 w-full bg-white/70 backdrop-blur-sm shadow-md z-20">
+    <div class="max-w-4xl mx-auto flex items-center p-4">
+      <img src="imagenes/LOGO_SIN_FONDO_Mesa_de_trabajo_1-removebg-preview.png"
+           alt="Logo CERCETA" class="h-12 w-auto"/>
+      <h1 class="ml-4 text-2xl font-extrabold text-blue-600">
+        CURSOS EMPRESAIALES
+      </h1>
+    </div>
+  </header>
+
+  <!-- Contenedor central -->
+  <main class="flex items-center justify-center min-h-screen px-4 pt-24 h-full">
+    <div class="w-full max-w-md bg-white/80 backdrop-blur-md rounded-2xl shadow-2xl p-8 space-y-6">
+      
+      <!-- Logo Alianza -->
+      <div class="flex justify-center">
+        <img src="imagenes/LOGO_FONDO_BLANCO.png"
+             alt="Logo Alianza" class="h-12 w-auto"/>
+      </div>
+
+      <!-- Selector de rol -->
+      <div class="flex justify-center border border-blue-600 rounded-lg overflow-hidden">
+        <button type="button" class="role-btn flex-1 py-2 bg-blue-600 text-white font-medium transition"
+                data-role="course" data-bg="imagenes/curso2.png" data-action="/login/course">
+          Deseo tomar el curso
+        </button>
+        <button type="button" class="role-btn flex-1 py-2 bg-white text-blue-600 font-medium transition"
+                data-role="admin" data-bg="imagenes/admin.png" data-action="/login/admin">
+          Administrador
+        </button>
+        <input type="hidden" id="role" name="role" value="course"/>
+      </div>
+
+      <!-- Formulario -->
+      <form id="login-form" action="/login/curso" method="POST" class="space-y-5">
+        
+        <!-- Correo -->
+        <div>
+          <label for="username" class="block text-sm font-semibold">Correo</label>
+          <input type="email" id="username" name="email" required
+                 class="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"/>
+        </div>
+
+        <!-- Contraseña -->
+        <div class="relative">
+          <label for="password" class="block text-sm font-semibold">Contraseña</label>
+          <input type="password" id="password" name="password" required
+                 class="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"/>
+          <button type="button"
+                  class="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none"
+                  id="toggle-password">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+
+        <!-- Entrar -->
+        <button type="submit"
+                class="w-full py-2 rounded-lg bg-blue-600 text-white font-bold uppercase tracking-wide
+                       hover:bg-blue-700 active:bg-blue-800 transition">
+          Entrar
+        </button>
+
+        <!-- Olvidé contraseña -->
+        <div class="text-center">
+          <a href="#" id="forgot-password-link"
+             class="text-sm text-blue-600 hover:underline">
+            ¿Has olvidado la contraseña?
+          </a>
+        </div>
+
+        <!-- Reset password -->
+        <div id="reset-password-container" class="hidden space-y-3">
+          <div>
+            <label for="reset-email" class="block text-sm font-semibold">Correo electrónico</label>
+            <input type="email" id="reset-email" name="reset-email" placeholder="tu@correo.com"
+                   class="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none"/>
+          </div>
+          <button id="send-reset-link" type="button"
+                  class="w-full py-2 rounded-lg bg-green-500 text-white font-medium hover:bg-green-600 transition">
+            Enviar enlace
+          </button>
+          <p id="reset-message" class="text-center text-green-600 mt-2 hidden"></p>
+        </div>
+
+      </form>
+    </div>
+  </main>
+
+  <!-- Botones flotantes -->
+  <div class="fixed bottom-6 right-6 flex flex-col space-y-4 z-20">
+    <a href="https://wa.me/573106993809" target="_blank"
+       class="p-4 bg-green-500 rounded-full shadow-lg hover:bg-green-600 transition">
+      <i class="fab fa-whatsapp fa-lg text-white"></i>
+    </a>
+    <a href="tel:+573106993809"
+       class="p-4 bg-blue-500 rounded-full shadow-lg hover:bg-blue-600 transition">
+      <i class="fas fa-phone fa-lg text-white"></i>
+    </a>
+    <button id="install-btn"
+            class="p-4 bg-gray-800 rounded-full shadow-lg text-white hidden hover:bg-gray-900 transition">
+      <i class="fas fa-download fa-lg"></i>
+    </button>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    // Referencias iniciales
+    const bg = document.getElementById('bg');
+    const roleInput = document.getElementById('role');
+    const form = document.getElementById('login-form');
+
+    // Manejo de botones con data-bg, data-role y data-action
+    document.querySelectorAll('.role-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Cambiar background
+        bg.style.backgroundImage = `url('${btn.dataset.bg}')`;
+        // Actualizar input oculto
+        roleInput.value = btn.dataset.role;
+        // Cambiar endpoint del formulario
+        form.action = btn.dataset.action;
+        // Ajustar estilos activos
+        document.querySelectorAll('.role-btn').forEach(b => {
+          b.classList.replace('bg-blue-600','bg-white');
+          b.classList.replace('text-white','text-blue-600');
+        });
+        btn.classList.replace('bg-white','bg-blue-600');
+        btn.classList.replace('text-blue-600','text-white');
+      });
+    });
+
+    // Mostrar / ocultar contraseña
+    document.getElementById('toggle-password').addEventListener('click', function() {
+      const pwd = document.getElementById('password');
+      const icon = this.querySelector('i');
+      if (pwd.type === 'password') { pwd.type = 'text'; icon.classList.replace('fa-eye','fa-eye-slash'); }
+      else { pwd.type = 'password'; icon.classList.replace('fa-eye-slash','fa-eye'); }
+    });
+
+    // Olvidé contraseña
+    const forgotLink = document.getElementById('forgot-password-link');
+    const resetCont = document.getElementById('reset-password-container');
+    forgotLink.addEventListener('click', e => { e.preventDefault(); resetCont.classList.toggle('hidden'); });
+
+    // Enviar enlace de reseteo
+    document.getElementById('send-reset-link').addEventListener('click', async () => {
+      const resEls = document.getElementById('reset-message');
+      const email = document.getElementById('reset-email').value;
+      try {
+        const res = await fetch('/request-password-reset', {
+          method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        resEls.textContent = data.message; resEls.classList.remove('hidden');
+      } catch {
+        resEls.textContent = 'Error al enviar el enlace.'; resEls.classList.remove('hidden');
+      }
+    });
+
+    // PWA Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(reg => console.log('SW registrado:', reg.scope))
+          .catch(err => console.error('Error SW:', err));
+      });
+    }
+
+    // Install prompt
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; document.getElementById('install-btn').classList.remove('hidden'); });
+    document.getElementById('install-btn').addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') document.getElementById('install-btn').classList.add('hidden');
+      deferredPrompt = null;
+    });
+  </script>
+
+</body>
+</html>

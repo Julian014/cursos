@@ -54,6 +54,8 @@ app.use(express.static('public', {
   }));
   
 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 
 // Ruta para manejar el login
@@ -423,8 +425,8 @@ const { v4: uuidv4 } = require('uuid'); // Utiliza UUID para generar IDs únicos
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-         user: 'cercetasolucionempresarial@gmail.com', // ← Faltaba cerrar comillas aquí
-                pass: 'yuumpbszqtbxscsq'
+         user: 'amayacarlos898@gmail.com', // ← Faltaba cerrar comillas aquí
+                pass: 'zfqccwbvwzgccdmj'
     },
     messageId: uuidv4(), // Genera un Message-ID único para cada correo enviado
 });
@@ -617,6 +619,29 @@ app.get("/menu_admin", async (req, res) => {
 
 
 
+app.get("/usuarios_admin", async (req, res) => {
+  if (req.session.loggedin === true) {
+    try {
+      const userId = req.session.userId;
+      const nombreUsuario = req.session.name;
+      console.log(`El usuario ${nombreUsuario} está autenticado.`);
+      req.session.nombreGuardado = nombreUsuario;
+
+      res.render("admin/crear_usuario_admin.hbs", {
+        layout: 'layouts/nav_admin.hbs',
+        name: nombreUsuario,
+        userId,
+      });
+    } catch (error) {
+      console.error('Error al obtener el conteo de datos:', error);
+      res.status(500).send('Error al cargar el menú administrativo');
+    }
+  } else {
+    res.redirect("/login");
+  }
+});
+
+
 
 app.get("/menu_cursos", async (req, res) => {
     if (req.session.loggedin === true) {
@@ -643,17 +668,137 @@ app.get("/menu_cursos", async (req, res) => {
 
 
 
+// Ruta POST
+app.post('/guardar_usuario_admin', async (req, res) => {
+  console.log('POST /guardar_usuario_admin llamado');
+  console.log('Req.body:', req.body);
+
+  const { nombre, email, rol } = req.body;
+  if (!nombre || !email || !rol) {
+    console.log('Validación fallida: faltan campos');
+    return res.status(400).render('crear_usuario_admin', {
+      error: 'Todos los campos son obligatorios',
+      form: { nombre, email }
+    });
+  }
+  console.log('Validación exitosa');
+
+  // 1) Generar contraseña aleatoria
+  const rawPassword = crypto.randomBytes(4).toString('hex');
+  console.log('Contraseña generada (en claro):', rawPassword);
+
+  // 2) Insertar en BD guardando la contraseña en claro
+  const sql = `
+    INSERT INTO usuarios_administradores
+      (nombre, email, password, rol, creado_en)
+    VALUES (?, ?, ?, ?, NOW())
+  `;
+  try {
+    const [result] = await pool.query(sql, [nombre, email, rawPassword, rol]);
+    console.log('Inserción exitosa, resultado:', result);
+
+    // 3) Enviar correo con credenciales
+    await transporter.sendMail({
+      from: '"soporte Admin" <amayacarlos898@gmail.com>',
+      to: email,
+      subject: 'Tus credenciales de administrador',
+      html: `
+        <p>Hola <strong>${nombre}</strong>,</p>
+        <p>Tu cuenta ha sido creada con éxito:</p>
+        <ul>
+          <li><strong>Email:</strong> ${email}</li>
+          <li><strong>Contraseña:</strong> ${rawPassword}</li>
+        </ul>
+        <p>Por favor ingresa y cambia tu contraseña.</p>
+      `
+    });
+    console.log('Correo enviado a:', email);
+
+    // 4) Redirigir con éxito
+    return res.redirect('/usuarios_admin?success=1');
+
+  } catch (err) {
+    console.error('Error al guardar el usuario o enviar correo:', err);
+    if (err.code === 'ER_DUP_ENTRY') {
+      console.log('Email duplicado detectado');
+      return res.status(409).render('crear_usuario_admin', {
+        error: 'El correo ya está registrado',
+        form: { nombre, email }
+      });
+    }
+    return res.status(500).render('crear_usuario_admin', {
+      error: 'Error al crear el usuario',
+      form: { nombre, email }
+    });
+  }
+});
 
 
 
 
+app.get("/usuarios_cursos", async (req, res) => {
+  if (req.session.loggedin === true) {
+    try {
+      const userId = req.session.userId;
+      const nombreUsuario = req.session.name;
+      console.log(`El usuario ${nombreUsuario} está autenticado.`);
+      req.session.nombreGuardado = nombreUsuario;
+
+      res.render("admin/crear_usuario_cursos.hbs", {
+        layout: 'layouts/nav_admin.hbs',
+        name: nombreUsuario,
+        userId,
+      });
+    } catch (error) {
+      console.error('Error al obtener el conteo de datos:', error);
+      res.status(500).send('Error al cargar el menú administrativo');
+    }
+  } else {
+    res.redirect("/login");
+  }
+});
 
 
 
 
+app.get("/pagos_consulta", async (req, res) => {
+  if (req.session.loggedin === true) {
+    try {
+      const userId = req.session.userId;
+      const nombreUsuario = req.session.name;
+      console.log(`El usuario ${nombreUsuario} está autenticado.`);
+      req.session.nombreGuardado = nombreUsuario;
 
+      // Ejecutamos la consulta sobre la tabla pagos_cursos
+      const sql = `
+        SELECT
+          nombre,
+          apellidos,
+          correo,
+          nombre_curso,
+          total_curso,
+          fecha_pago,
+          saldo_pendiente
+        FROM pagos_cursos
+        ORDER BY fecha_pago DESC
+      `;
+      const [pagos] = await pool.query(sql);
 
-
+      // Renderizamos la vista pasando el array de pagos
+      res.render("admin/pagos/consulta.hbs", {
+        layout: "layouts/nav_admin.hbs",
+        name: nombreUsuario,
+        userId,
+        pagos
+      });
+    } catch (error) {
+      console.error("Error al obtener pagos:", error);
+      res.status(500).send("Error al cargar la consulta de pagos");
+    }
+  } else {
+    res.redirect("/login");
+  }
+});
 
 
   

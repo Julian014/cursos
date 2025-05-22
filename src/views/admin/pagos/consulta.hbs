@@ -1,0 +1,115 @@
+{{!-- views/admin/pagos/pagos_cursos.hbs --}}
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Consulta de Pagos por Curso</h2>
+    <button class="btn btn-success" type="button" data-bs-toggle="collapse" data-bs-target="#formAgregarPago" aria-expanded="false" aria-controls="formAgregarPago">
+      <i class="bi bi-plus-lg"></i> Agregar Pago
+    </button>
+  </div>
+
+  {{!-- Formulario colapsable --}}
+  <div class="collapse mb-4" id="formAgregarPago">
+    <div class="card card-body">
+      <form action="/pagos_nuevo" method="POST">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" id="nombre" name="nombre" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label for="apellidos" class="form-label">Apellidos</label>
+            <input type="text" id="apellidos" name="apellidos" class="form-control" required>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="correo" class="form-label">Correo</label>
+          <input type="email" id="correo" name="correo" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="nombre_curso" class="form-label">Curso</label>
+          <input type="text" id="nombre_curso" name="nombre_curso" class="form-control" required>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label for="total_curso" class="form-label">Total Curso</label>
+            <input type="number" step="0.01" id="total_curso" name="total_curso" class="form-control" required>
+          </div>
+          <div class="col-md-4">
+            <label for="abono" class="form-label">Abono</label>
+            <input type="number" step="0.01" id="abono" name="abono" class="form-control" required>
+          </div>
+          <div class="col-md-4">
+            <label for="saldo_pendiente" class="form-label">Saldo Pendiente</label>
+            <input type="number" step="0.01" id="saldo_pendiente" name="saldo_pendiente" class="form-control" readonly>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="fecha_pago" class="form-label">Fecha de Pago</label>
+          <input type="date" id="fecha_pago" name="fecha_pago" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar Pago</button>
+        <button type="button" class="btn btn-secondary ms-2" data-bs-toggle="collapse" data-bs-target="#formAgregarPago">
+          Cancelar
+        </button>
+      </form>
+    </div>
+  </div>
+
+  {{!-- Tabla de pagos --}}
+  {{#if pagos.length}}
+    <table class="table table-striped mt-3">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Apellidos</th>
+          <th>Correo</th>
+          <th>Curso</th>
+          <th>Total Curso</th>
+          <th>Fecha de Pago</th>
+          <th>Saldo Pendiente</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each pagos}}
+          <tr>
+            <td>{{this.nombre}}</td>
+            <td>{{this.apellidos}}</td>
+            <td>{{this.correo}}</td>
+            <td>{{this.nombre_curso}}</td>
+            <td>${{this.total_curso}}</td>
+            <td>{{this.fecha_pago}}</td>
+            <td>${{this.saldo_pendiente}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  {{else}}
+    <div class="alert alert-info mt-3">
+      No se encontraron registros de pagos.
+    </div>
+  {{/if}}
+</div>
+
+{{!-- Script para calcular saldo pendiente automáticamente --}}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const totalInput = document.getElementById('total_curso');
+    const abonoInput = document.getElementById('abono');
+    const saldoInput = document.getElementById('saldo_pendiente');
+
+    function calcularSaldo() {
+      const total = parseFloat(totalInput.value) || 0;
+      const abono = parseFloat(abonoInput.value) || 0;
+      const saldo = total - abono;
+      saldoInput.value = saldo.toFixed(2);
+    }
+
+    totalInput.addEventListener('input', calcularSaldo);
+    abonoInput.addEventListener('input', calcularSaldo);
+  });
+</script>

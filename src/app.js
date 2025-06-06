@@ -778,8 +778,10 @@ app.get("/pagos_consulta", async (req, res) => {
           nombre_curso,
           total_curso,
           fecha_pago,
-          saldo_pendiente
-        FROM pagos_cursos
+          saldo_pendiente,
+          tipo_documento,
+          numero_documento	
+        FROM pagos
         ORDER BY fecha_pago DESC
       `;
       const [pagos] = await pool.query(sql);
@@ -801,8 +803,105 @@ app.get("/pagos_consulta", async (req, res) => {
 });
 
 
-  
-  
+
+
+app.post('/pagos_nuevo', async (req, res) => {
+  try {
+    console.log('Datos recibidos:', req.body);
+
+    // ✅ Reconstrucción de cursos si vienen como campos planos (ej: cursos[0][nombre_curso])
+    let cursosReconstruidos = [];
+    Object.keys(req.body).forEach(key => {
+      const match = key.match(/^cursos\[(\d+)\]\[(\w+)\]$/);
+      if (match) {
+        const index = parseInt(match[1]);
+        const campo = match[2];
+        if (!cursosReconstruidos[index]) cursosReconstruidos[index] = {};
+        cursosReconstruidos[index][campo] = req.body[key];
+      }
+    });
+
+    if (cursosReconstruidos.length > 0) {
+      req.body.cursos = cursosReconstruidos;
+    }
+
+    // ✅ Desestructuración y validación de campos principales
+const { nombre, apellidos, correo, tipo_documento, numero_documento, cursos } = req.body;
+
+const camposRequeridos = ['nombre', 'apellidos', 'correo', 'tipo_documento', 'numero_documento', 'cursos'];
+const camposFaltantes = camposRequeridos.filter(campo => !req.body[campo]);
+
+    if (camposFaltantes.length > 0) {
+      return res.status(400).json({
+        error: `Faltan los siguientes campos requeridos: ${camposFaltantes.join(', ')}`
+      });
+    }
+
+    // ✅ Asegurar que cursos sea un arreglo
+    let cursosArray;
+    if (Array.isArray(cursos)) {
+      cursosArray = cursos;
+    } else if (typeof cursos === 'object' && cursos !== null) {
+      cursosArray = [cursos];
+    } else {
+      return res.status(400).json({
+        error: 'Formato de cursos inválido. Debe ser un arreglo o un objeto.'
+      });
+    }
+
+    // ✅ Procesamiento y validación de cada curso
+    for (const [i, curso] of cursosArray.entries()) {
+      const camposCurso = ['nombre_curso', 'total_curso', 'abono', 'fecha_pago'];
+      const faltantes = camposCurso.filter(campo => !curso[campo]);
+
+      if (faltantes.length > 0) {
+        return res.status(400).json({
+          error: `Faltan los siguientes campos en el curso #${i + 1}: ${faltantes.join(', ')}`
+        });
+      }
+
+      const { nombre_curso, total_curso, abono, fecha_pago } = curso;
+
+      const total = parseFloat(total_curso);
+      const abonoVal = parseFloat(abono);
+
+      if (isNaN(total) || isNaN(abonoVal)) {
+        return res.status(400).json({
+          error: `Valores numéricos inválidos en el curso #${i + 1}`
+        });
+      }
+
+      if (abonoVal > total) {
+        return res.status(400).json({
+          error: `El abono no puede ser mayor al total en el curso #${i + 1}`
+        });
+      }
+
+      const saldo = total - abonoVal;
+
+      try {
+  await pool.query(
+  `INSERT INTO pagos 
+    (nombre, apellidos, correo, tipo_documento, numero_documento, nombre_curso, total_curso, abono, saldo_pendiente, fecha_pago)
+   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+  [nombre, apellidos, correo, tipo_documento, numero_documento, nombre_curso, total, abonoVal, saldo, fecha_pago]
+);
+
+      } catch (dbError) {
+        console.error(`Error al guardar curso #${i + 1} en la base de datos:`, dbError);
+        return res.status(500).json({ error: 'Error al guardar en la base de datos' });
+      }
+    }
+
+    // ✅ Éxito total
+    res.redirect('/pagos_consulta');
+
+  } catch (error) {
+    console.error('Error general del servidor:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
 
 
 app.get('/', (req, res) => {

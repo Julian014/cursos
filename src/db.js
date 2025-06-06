@@ -4,8 +4,8 @@ const mysql = require('mysql2');
 const pool = mysql.createPool({
     host: '147.93.118.246',
     user: 'root',
-    password: 'F32fBsITy7PywBEMtC3Es6rmWowYGNGzgiwot7TL7UedJSSZUbgxBvARocHO2y6G',
-    database: 'cerceta',
+    password: '6mR5FNHf6cCODcny2CLCLU85UdGcyoUdGJGQBxD494nHKxQALYdMgyrKoIfB1du2',
+    database: 'cursos',
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0

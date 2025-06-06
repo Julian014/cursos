@@ -1,0 +1,56 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- Tailwind CSS vía CDN (solo para desarrollo) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+<body>
+    
+<!-- Botón para agregar nuevo usuario -->
+<div class="flex justify-between items-center mb-4">
+  <h2 class="text-2xl font-bold text-gray-800">Usuarios Registrados</h2>
+  <button class="bg-gradient-to-r from-blue-500 to-blue-700 text-white px-6 py-2 rounded-full shadow-md hover:from-blue-600 hover:to-blue-800 transition duration-300 font-semibold">
+    + Agregar Usuario
+  </button>
+</div>
+
+<!-- Tabla bonita -->
+<div class="overflow-x-auto rounded-lg shadow-lg">
+  <table class="min-w-full bg-white border border-gray-200">
+    <thead class="bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 font-semibold">
+      <tr>
+        <th class="py-3 px-4 border-b">ID</th>
+        <th class="py-3 px-4 border-b">Nombre</th>
+        <th class="py-3 px-4 border-b">Correo</th>
+        <th class="py-3 px-4 border-b">Documento</th>
+        <th class="py-3 px-4 border-b">Fecha de Registro</th>
+        <th class="py-3 px-4 border-b">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each usuarios}}
+      <tr class="text-gray-800 hover:bg-gray-50 transition">
+        <td class="py-2 px-4 border-b">{{this.id}}</td>
+        <td class="py-2 px-4 border-b">{{this.nombre}}</td>
+        <td class="py-2 px-4 border-b">{{this.correo}}</td>
+        <td class="py-2 px-4 border-b">{{this.numero_documento}}</td>
+        <td class="py-2 px-4 border-b">{{formatearFecha this.fecha_registro}}</td>
+        <td class="py-2 px-4 border-b space-x-2">
+          <button class="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded-full font-semibold shadow-md transition">Editar</button>
+          <button class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-full font-semibold shadow-md transition">Eliminar</button>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>
+

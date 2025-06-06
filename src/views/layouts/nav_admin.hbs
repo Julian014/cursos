@@ -7,6 +7,8 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
   <style>
     body {
       margin: 0;
@@ -117,8 +119,15 @@
       </div>
       <ul class="nav flex-column">
         <li><a href="/menu_admin" class="nav-link"><i class="fas fa-arrow-left"></i> Volver</a></li>
-        <li><a href="/usuarios_admin" class="nav-link"><i class="fas fa-users-cog"></i> Usuarios Admin</a></li>
-        <li><a href="/usuarios_cursos" class="nav-link"><i class="fas fa-user-graduate"></i> Usuarios Cursos</a></li>
+<li class="nav-item dropdown">
+  <a class="nav-link dropdown-toggle" href="#" id="usuariosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <i class="fas fa-user-cog"></i> Gestión Usuarios
+  </a>
+  <ul class="dropdown-menu" aria-labelledby="usuariosDropdown">
+    <li><a class="dropdown-item" href="/usuarios_admin">Crear</a></li>
+    <li><a class="dropdown-item" href="/usuarios_admin_consultar">Consultar</a></li>
+  </ul>
+</li>        <li><a href="/usuarios_cursos" class="nav-link"><i class="fas fa-user-graduate"></i> Usuarios Cursos</a></li>
         <li><a href="/pagos_consulta" class="nav-link"><i class="fas fa-coins"></i> Pagos</a></li>
         <li><a href="/contenidos" class="nav-link"><i class="fas fa-folder-open"></i> Contenidos</a></li>
         <li class="mt-auto"><a href="/logout" class="nav-link text-danger"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a></li>

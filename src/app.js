@@ -57,7 +57,19 @@ app.use(express.static('public', {
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+hbs.registerHelper('formatearFecha', function (fecha) {
+  if (!(fecha instanceof Date)) {
+    fecha = new Date(fecha);
+  }
 
+  if (isNaN(fecha)) return 'Fecha inválida';
+
+  const dia = String(fecha.getDate()).padStart(2, '0');
+  const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+  const anio = fecha.getFullYear();
+
+  return `${dia}/${mes}/${anio}`;
+});
 // Ruta para manejar el login
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
@@ -335,6 +347,18 @@ app.get('/menu_residentes', async (req, res) => {
         res.redirect('/login');
     }
 });
+
+
+
+
+
+
+
+
+
+
+
+
 // En tu configuración de Handlebars
 hbs.registerHelper('ifCond', function (v1, v2, options) {
     return (v1 === v2) ? options.fn(this) : options.inverse(this);
@@ -735,7 +759,6 @@ app.post('/guardar_usuario_admin', async (req, res) => {
 
 
 
-
 app.get("/usuarios_cursos", async (req, res) => {
   if (req.session.loggedin === true) {
     try {
@@ -744,20 +767,26 @@ app.get("/usuarios_cursos", async (req, res) => {
       console.log(`El usuario ${nombreUsuario} está autenticado.`);
       req.session.nombreGuardado = nombreUsuario;
 
-      res.render("admin/crear_usuario_cursos.hbs", {
+      // Hacer la consulta a la base de datos
+      const [usuarios] = await pool.query(`
+        SELECT id, nombre, correo, numero_documento, fecha_registro
+        FROM usuarios_cursos
+      `);
+
+      res.render("admin/usuarios/cursos/consulta.hbs", {
         layout: 'layouts/nav_admin.hbs',
         name: nombreUsuario,
         userId,
+        usuarios,
       });
     } catch (error) {
-      console.error('Error al obtener el conteo de datos:', error);
-      res.status(500).send('Error al cargar el menú administrativo');
+      console.error('Error al obtener los usuarios:', error);
+      res.status(500).send('Error al cargar los usuarios');
     }
   } else {
     res.redirect("/login");
   }
 });
-
 
 
 
@@ -804,7 +833,6 @@ app.get("/pagos_consulta", async (req, res) => {
 
 
 
-
 app.post('/pagos_nuevo', async (req, res) => {
   try {
     console.log('Datos recibidos:', req.body);
@@ -825,11 +853,10 @@ app.post('/pagos_nuevo', async (req, res) => {
       req.body.cursos = cursosReconstruidos;
     }
 
-    // ✅ Desestructuración y validación de campos principales
-const { nombre, apellidos, correo, tipo_documento, numero_documento, cursos } = req.body;
+    const { nombre, apellidos, correo, tipo_documento, numero_documento, cursos } = req.body;
 
-const camposRequeridos = ['nombre', 'apellidos', 'correo', 'tipo_documento', 'numero_documento', 'cursos'];
-const camposFaltantes = camposRequeridos.filter(campo => !req.body[campo]);
+    const camposRequeridos = ['nombre', 'apellidos', 'correo', 'tipo_documento', 'numero_documento', 'cursos'];
+    const camposFaltantes = camposRequeridos.filter(campo => !req.body[campo]);
 
     if (camposFaltantes.length > 0) {
       return res.status(400).json({
@@ -837,7 +864,6 @@ const camposFaltantes = camposRequeridos.filter(campo => !req.body[campo]);
       });
     }
 
-    // ✅ Asegurar que cursos sea un arreglo
     let cursosArray;
     if (Array.isArray(cursos)) {
       cursosArray = cursos;
@@ -849,7 +875,6 @@ const camposFaltantes = camposRequeridos.filter(campo => !req.body[campo]);
       });
     }
 
-    // ✅ Procesamiento y validación de cada curso
     for (const [i, curso] of cursosArray.entries()) {
       const camposCurso = ['nombre_curso', 'total_curso', 'abono', 'fecha_pago'];
       const faltantes = camposCurso.filter(campo => !curso[campo]);
@@ -880,12 +905,12 @@ const camposFaltantes = camposRequeridos.filter(campo => !req.body[campo]);
       const saldo = total - abonoVal;
 
       try {
-  await pool.query(
-  `INSERT INTO pagos 
-    (nombre, apellidos, correo, tipo_documento, numero_documento, nombre_curso, total_curso, abono, saldo_pendiente, fecha_pago)
-   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-  [nombre, apellidos, correo, tipo_documento, numero_documento, nombre_curso, total, abonoVal, saldo, fecha_pago]
-);
+        await pool.query(
+          `INSERT INTO pagos 
+            (nombre, apellidos, correo, tipo_documento, numero_documento, nombre_curso, total_curso, abono, saldo_pendiente, fecha_pago)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          [nombre, apellidos, correo, tipo_documento, numero_documento, nombre_curso, total, abonoVal, saldo, fecha_pago]
+        );
 
       } catch (dbError) {
         console.error(`Error al guardar curso #${i + 1} en la base de datos:`, dbError);
@@ -893,7 +918,78 @@ const camposFaltantes = camposRequeridos.filter(campo => !req.body[campo]);
       }
     }
 
-    // ✅ Éxito total
+    try {
+      const [usuarioExistente] = await pool.query(
+        'SELECT * FROM usuarios_cursos WHERE numero_documento = ?',
+        [numero_documento]
+      );
+
+      if (usuarioExistente.length === 0) {
+        const generarContrasena = () => {
+          const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+          let pass = '';
+          for (let i = 0; i < 8; i++) {
+            pass += chars.charAt(Math.floor(Math.random() * chars.length));
+          }
+          return pass;
+        };
+
+        const contrasena = generarContrasena();
+
+        await pool.query(
+          `INSERT INTO usuarios_cursos (nombre, correo, numero_documento, contrasena)
+           VALUES (?, ?, ?, ?)`,
+          [`${nombre} ${apellidos}`, correo, numero_documento, contrasena]
+        );
+
+        console.log(`Usuario creado con documento ${numero_documento} y contraseña ${contrasena}`);
+
+        // ✅ ENVÍO DE CORREO
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+      user: 'amayacarlos898@gmail.com', // ← Faltaba cerrar comillas aquí
+                pass: 'zfqccwbvwzgccdmj'
+          }
+        });
+
+        const mailOptions = {
+          from: 'amayacarlos898@gmail.com',
+          to: correo,
+          subject: 'Acceso a la Plataforma',
+        text: `Hola ${nombre},
+
+¡Gracias por adquirir nuestros cursos y confiar en nuestra plataforma!
+
+Te damos la bienvenida y te informamos que ya has sido registrado correctamente. A continuación, te compartimos tus credenciales de acceso:
+
+Número de documento: ${numero_documento}  
+Contraseña: ${contrasena}
+
+Puedes ingresar a la plataforma con estos datos para acceder a todos los cursos que compraste y comenzar tu aprendizaje.
+
+Te recomendamos guardar esta información en un lugar seguro.
+
+¡Te deseamos mucho éxito en tu formación!
+
+Saludos,  
+El equipo de [Nombre de tu plataforma]`
+
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            console.error('Error al enviar el correo:', error);
+          } else {
+            console.log('Correo enviado a', correo, info.response);
+          }
+        });
+      }
+    } catch (usuarioError) {
+      console.error('Error al crear usuario en usuarios_cursos:', usuarioError);
+      return res.status(500).json({ error: 'Error al crear usuario en usuarios_cursos' });
+    }
+
     res.redirect('/pagos_consulta');
 
   } catch (error) {
@@ -901,9 +997,6 @@ const camposFaltantes = camposRequeridos.filter(campo => !req.body[campo]);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
-
-
-
 app.get('/', (req, res) => {
     res.redirect('/login');
 });

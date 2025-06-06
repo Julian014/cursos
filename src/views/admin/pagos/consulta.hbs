@@ -99,19 +99,20 @@
   <!-- Tabla de pagos -->
   {{#if pagos.length}}
     <table class="table table-striped mt-3">
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Apellidos</th>
-           <th>tipo_documento</th>
-          <th>numero_documento</th>
-          <th>Correo</th>
-          <th>Curso</th>
-          <th>Total Curso</th>
-          <th>Fecha de Pago</th>
-          <th>Saldo Pendiente</th>
-        </tr>
-      </thead>
+<thead>
+  <tr>
+    <th><input type="text" class="form-control form-control-sm" placeholder="Nombre"></th>
+    <th><input type="text" class="form-control form-control-sm" placeholder="Apellidos"></th>
+    <th><input type="text" class="form-control form-control-sm" placeholder="Tipo Doc."></th>
+    <th><input type="text" class="form-control form-control-sm" placeholder="Nro. Doc."></th>
+    <th><input type="text" class="form-control form-control-sm" placeholder="Correo"></th>
+    <th><input type="text" class="form-control form-control-sm" placeholder="Curso"></th>
+    <th><input type="text" class="form-control form-control-sm" placeholder="Total"></th>
+    <th><input type="text" class="form-control form-control-sm" placeholder="Fecha"></th>
+    <th><input type="text" class="form-control form-control-sm" placeholder="Saldo"></th>
+  </tr>
+</thead>
+
       <tbody>
         {{#each pagos}}
           <tr>
@@ -231,3 +232,25 @@
     box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
   }
 </style>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const table = document.querySelector("table");
+    const filters = table.querySelectorAll("thead input");
+    const rows = table.querySelectorAll("tbody tr");
+
+    filters.forEach((input, colIndex) => {
+      input.addEventListener("input", () => {
+        const filterValues = Array.from(filters).map(f => f.value.toLowerCase());
+        
+        rows.forEach(row => {
+          const cells = row.querySelectorAll("td");
+          const match = filterValues.every((val, i) => {
+            return cells[i].textContent.toLowerCase().includes(val);
+          });
+
+          row.style.display = match ? "" : "none";
+        });
+      });
+    });
+  });
+</script>

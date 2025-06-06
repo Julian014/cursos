@@ -641,8 +641,6 @@ app.get("/menu_admin", async (req, res) => {
 
 
 
-
-
 app.get("/usuarios_admin", async (req, res) => {
   if (req.session.loggedin === true) {
     try {
@@ -651,21 +649,27 @@ app.get("/usuarios_admin", async (req, res) => {
       console.log(`El usuario ${nombreUsuario} está autenticado.`);
       req.session.nombreGuardado = nombreUsuario;
 
+      // Consulta para traer todos los administradores
+      const [usuariosAdmin] = await pool.query(`
+        SELECT id, email, nombre, rol, creado_en 
+        FROM usuarios_administradores
+        ORDER BY creado_en DESC
+      `);
+
       res.render("admin/crear_usuario_admin.hbs", {
         layout: 'layouts/nav_admin.hbs',
         name: nombreUsuario,
         userId,
+        usuariosAdmin
       });
     } catch (error) {
-      console.error('Error al obtener el conteo de datos:', error);
+      console.error('Error al obtener los administradores:', error);
       res.status(500).send('Error al cargar el menú administrativo');
     }
   } else {
     res.redirect("/login");
   }
 });
-
-
 
 app.get("/menu_cursos", async (req, res) => {
     if (req.session.loggedin === true) {
@@ -997,6 +1001,44 @@ El equipo de [Nombre de tu plataforma]`
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
+
+
+
+
+
+
+
+app.post("/eliminar_usuario_admin/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    await pool.query("DELETE FROM usuarios_administradores WHERE id = ?", [id]);
+    res.redirect("/usuarios_admin");
+  } catch (error) {
+    console.error("Error al eliminar usuario:", error);
+    res.status(500).send("Error al eliminar el usuario");
+  }
+});
+
+app.get("/editar_usuario_admin/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    const [rows] = await pool.query("SELECT * FROM usuarios_administradores WHERE id = ?", [id]);
+    if (rows.length === 0) return res.status(404).send("Usuario no encontrado");
+
+    res.render("admin/editar_usuario_admin.hbs", {
+      layout: "layouts/nav_admin.hbs",
+      usuario: rows[0],
+    });
+  } catch (error) {
+    console.error("Error al obtener usuario:", error);
+    res.status(500).send("Error al cargar usuario");
+  }
+});
+
+
+
+
+
 app.get('/', (req, res) => {
     res.redirect('/login');
 });

@@ -1,40 +1,87 @@
 <div class="container mt-4">
   <h2>Crear Usuario Administrador</h2>
 
+  <!-- Botón para mostrar el formulario -->
+  <button class="btn btn-success mb-3" onclick="mostrarFormulario()">➕ Agregar nuevo administrador</button>
+
   {{#if error}}
     <div class="alert alert-danger">{{error}}</div>
   {{/if}}
 
-  <form action="/guardar_usuario_admin" method="POST">
-    <div class="mb-3">
-      <label for="nombre" class="form-label">Nombre</label>
-      <input
-        type="text"
-        id="nombre"
-        name="nombre"
-        class="form-control"
-        required
-        value="{{form.nombre}}"
-      />
-    </div>
+  <!-- FORMULARIO OCULTO -->
+  <div id="formularioAdmin" style="display: none;">
+    <form action="/guardar_usuario_admin" method="POST">
+      <div class="mb-3">
+        <label for="nombre" class="form-label">Nombre</label>
+        <input
+          type="text"
+          id="nombre"
+          name="nombre"
+          class="form-control"
+          required
+          value="{{form.nombre}}"
+        />
+      </div>
 
-    <div class="mb-3">
-      <label for="email" class="form-label">Correo Electrónico</label>
-      <input
-        type="email"
-        id="email"
-        name="email"
-        class="form-control"
-        required
-        value="{{form.email}}"
-      />
-    </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">Correo Electrónico</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          class="form-control"
+          required
+          value="{{form.email}}"
+        />
+      </div>
 
-    <!-- rol fijo -->
-    <input type="hidden" name="rol" value="admin" />
+      <input type="hidden" name="rol" value="admin" />
 
-    <button type="submit" class="btn btn-primary">
-      Guardar Usuario
-    </button>
-  </form>
+      <button type="submit" class="btn btn-primary">Guardar Usuario</button>
+    </form>
+  </div>
+
+  <hr>
+
+  <!-- TABLA -->
+<h2>Lista de Administradores</h2>
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Email</th>
+      <th>Nombre</th>
+      <th>Rol</th>
+      <th>Creado En</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each usuariosAdmin}}
+    <tr>
+      <td>{{this.id}}</td>
+      <td>{{this.email}}</td>
+      <td>{{this.nombre}}</td>
+      <td>{{this.rol}}</td>
+      <td>{{formatearFecha this.creado_en}}</td>
+      <td>
+        <!-- Botón Editar -->
+        <a href="/editar_usuario_admin/{{this.id}}" class="btn btn-warning btn-sm">✏️ Editar</a>
+
+        <!-- Botón Eliminar -->
+        <form action="/eliminar_usuario_admin/{{this.id}}" method="POST" style="display:inline;" onsubmit="return confirm('¿Seguro que deseas eliminar este usuario?');">
+          <button type="submit" class="btn btn-danger btn-sm">🗑️ Eliminar</button>
+        </form>
+      </td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
+
 </div>
+<script>
+  function mostrarFormulario() {
+    const form = document.getElementById('formularioAdmin');
+    form.style.display = (form.style.display === 'none') ? 'block' : 'none';
+  }
+</script>

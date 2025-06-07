@@ -16,22 +16,6 @@
     --shadow: 0 6px 30px rgba(0, 0, 0, 0.07);
   }
 
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-
-  body {
-    font-family: 'Poppins', sans-serif;
-    background-color: var(--secondary);
-    color: var(--text-dark);
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-  }
 
   h1 {
     font-size: 2.5rem;
@@ -237,6 +221,22 @@
 .indicadores .circulo.activo {
   background-color: var(--primary);
 }
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+html, body {
+  overflow-x: hidden;
+}
+* {
+  box-sizing: border-box;
+  max-width: 100%;
+}
 
 </style>
 
@@ -245,15 +245,18 @@
 <body>
 
   <h1>Curso: Desarrollo Profesional</h1>
-  <div id="menuModulos">
-    <h3>Módulos del Curso</h3>
-    <ul>
-      <li><button id="btnModulo1" onclick="irAModulo(1)">Módulo 1</button></li>
-      <li><button id="btnModulo2" onclick="irAModulo(2)" disabled>Módulo 2</button></li>
-      <li><button id="btnModulo3" onclick="irAModulo(3)" disabled>Módulo 3</button></li>
-      <li><button id="btnModulo4" onclick="irAModulo(4)" disabled>Módulo 4</button></li>
-    </ul>
-  </div>
+  <button onclick="toggleMenuModulos()" style="margin-bottom: 1rem; padding: 0.6rem 1.2rem; border-radius: 8px; border: none; background: var(--primary); color: white; cursor: pointer;">
+  Mostrar/Ocultar Módulos
+</button>
+<div id="menuModulos" style="display: none;">
+  <h3>Módulos del Curso</h3>
+  <ul>
+    <li><button id="btnModulo1" onclick="irAModulo(1)">Módulo 1</button></li>
+    <li><button id="btnModulo2" onclick="irAModulo(2)" disabled>Módulo 2</button></li>
+    <li><button id="btnModulo3" onclick="irAModulo(3)" disabled>Módulo 3</button></li>
+    <li><button id="btnModulo4" onclick="irAModulo(4)" disabled>Módulo 4</button></li>
+  </ul>
+</div>
 
   <!-- Módulo 1 -->
   <div id="modulo1">
@@ -671,6 +674,12 @@ function actualizarPaso() {
 
 
   </script>
+<script>
+  function toggleMenuModulos() {
+    const menu = document.getElementById('menuModulos');
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+  }
+</script>
 
 </body>
 </html>

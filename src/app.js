@@ -1047,7 +1047,9 @@ app.get("/curso_desarrolloprofesional", async (req, res) => {
 
             // Renderiza la vista y pasa los datos necesarios
             res.render("cursos/contenidos/desarrolloprofesional/desarrolloprofesional.hbs", {
-                name: nombreUsuario,
+                      layout: "layouts/nav_admin.hbs",
+
+              name: nombreUsuario,
                 userId,
             });
         } catch (error) {

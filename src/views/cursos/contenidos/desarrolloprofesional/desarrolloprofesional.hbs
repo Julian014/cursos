@@ -436,6 +436,17 @@ html, body {
     Borrar todos los datos de progreso (Solo pruebas)
   </button>
 </div>
+<!-- Lightbox Fullscreen Viewer -->
+<div id="lightbox" style="display: none; position: fixed; top: 0; left: 0; 
+  width: 100vw; height: 100vh; background: rgba(0,0,0,0.95); 
+  z-index: 9999; justify-content: center; align-items: center; flex-direction: column;">
+  <button onclick="cerrarLightbox()" style="position: absolute; top: 1rem; right: 1rem; background: #ef4444; color: white; padding: 0.6rem 1rem; border: none; border-radius: 8px;">Cerrar</button>
+  <div id="lightbox-content" style="max-width: 95%; max-height: 90%;"></div>
+  <div style="margin-top: 1rem; display: flex; gap: 1rem;">
+    <button onclick="cambiarPaso(-1)" style="padding: 0.5rem 1rem;">← Anterior</button>
+    <button onclick="cambiarPaso(1)" style="padding: 0.5rem 1rem;">Siguiente →</button>
+  </div>
+</div>
 
 <script>
   function borrarDatosPrueba() {
@@ -679,6 +690,128 @@ function actualizarPaso() {
     const menu = document.getElementById('menuModulos');
     menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
   }
+</script>
+<script>
+  // Activar vista fullscreen para imágenes
+  document.querySelectorAll('.paso img').forEach(img => {
+    img.style.cursor = "zoom-in";
+    img.addEventListener('click', () => {
+      abrirImagenEnPantallaCompleta(img);
+    });
+  });
+
+  function abrirImagenEnPantallaCompleta(img) {
+    const contenedor = document.createElement('div');
+    contenedor.style.position = 'fixed';
+    contenedor.style.top = '0';
+    contenedor.style.left = '0';
+    contenedor.style.width = '100vw';
+    contenedor.style.height = '100vh';
+    contenedor.style.backgroundColor = 'rgba(0, 0, 0, 0.95)';
+    contenedor.style.display = 'flex';
+    contenedor.style.alignItems = 'center';
+    contenedor.style.justifyContent = 'center';
+    contenedor.style.zIndex = '9999';
+    contenedor.style.flexDirection = 'column';
+
+    const imagenGrande = document.createElement('img');
+    imagenGrande.src = img.src;
+    imagenGrande.style.maxWidth = '95%';
+    imagenGrande.style.maxHeight = '85%';
+    imagenGrande.style.borderRadius = '12px';
+    imagenGrande.style.boxShadow = '0 0 20px rgba(0,0,0,0.4)';
+
+    const botones = document.createElement('div');
+    botones.style.marginTop = '1.2rem';
+    botones.style.display = 'flex';
+    botones.style.gap = '1rem';
+
+    const btnCerrar = document.createElement('button');
+    btnCerrar.textContent = 'Cerrar';
+    btnCerrar.style.padding = '0.6rem 1.2rem';
+    btnCerrar.style.background = '#ef4444';
+    btnCerrar.style.color = 'white';
+    btnCerrar.style.border = 'none';
+    btnCerrar.style.borderRadius = '8px';
+    btnCerrar.style.cursor = 'pointer';
+    btnCerrar.onclick = () => document.body.removeChild(contenedor);
+
+    const btnAtras = document.createElement('button');
+    btnAtras.textContent = '← Anterior';
+    btnAtras.style.padding = '0.6rem 1rem';
+    btnAtras.style.background = '#4f46e5';
+    btnAtras.style.color = 'white';
+    btnAtras.style.border = 'none';
+    btnAtras.style.borderRadius = '8px';
+    btnAtras.style.cursor = 'pointer';
+    btnAtras.onclick = () => navegarPasos(-1);
+
+    const btnAdelante = document.createElement('button');
+    btnAdelante.textContent = 'Siguiente →';
+    btnAdelante.style.padding = '0.6rem 1rem';
+    btnAdelante.style.background = '#4f46e5';
+    btnAdelante.style.color = 'white';
+    btnAdelante.style.border = 'none';
+    btnAdelante.style.borderRadius = '8px';
+    btnAdelante.style.cursor = 'pointer';
+    btnAdelante.onclick = () => navegarPasos(1);
+
+    botones.appendChild(btnAtras);
+    botones.appendChild(btnAdelante);
+    botones.appendChild(btnCerrar);
+
+    contenedor.appendChild(imagenGrande);
+    contenedor.appendChild(botones);
+    document.body.appendChild(contenedor);
+  }
+
+  function navegarPasos(direccion) {
+    const pasos = document.querySelectorAll('.paso');
+    let activo = Array.from(pasos).findIndex(p => p.classList.contains('activo'));
+    if (activo !== -1) {
+      pasos[activo].classList.remove('activo');
+      let nuevo = activo + direccion;
+      if (nuevo < 0) nuevo = 0;
+      if (nuevo >= pasos.length) nuevo = pasos.length - 1;
+      pasos[nuevo].classList.add('activo');
+      // También cerramos fullscreen si está abierto
+      const modal = document.querySelector('body > div[style*="position: fixed"]');
+      if (modal) document.body.removeChild(modal);
+      // Abrimos fullscreen de la nueva imagen si es imagen
+      const nuevaImg = pasos[nuevo].querySelector('img');
+      if (nuevaImg) abrirImagenEnPantallaCompleta(nuevaImg);
+    }
+  }
+</script>
+<script>
+let pasos = document.querySelectorAll("#modulo1 .paso");
+let pasoActual = 0;
+
+function abrirLightbox(index) {
+  pasoActual = index;
+  const contenido = pasos[pasoActual].cloneNode(true);
+  const contenedor = document.getElementById("lightbox-content");
+  contenedor.innerHTML = "";
+  contenedor.appendChild(contenido);
+  document.getElementById("lightbox").style.display = "flex";
+}
+
+function cerrarLightbox() {
+  document.getElementById("lightbox").style.display = "none";
+}
+
+function cambiarPaso(direccion) {
+  pasoActual += direccion;
+  if (pasoActual < 0) pasoActual = 0;
+  if (pasoActual >= pasos.length) pasoActual = pasos.length - 1;
+  abrirLightbox(pasoActual);
+}
+
+// Activar lightbox al hacer clic en imagen o video
+document.querySelectorAll("#modulo1 .paso img, #modulo1 .paso video").forEach((elemento, index) => {
+  elemento.style.cursor = "pointer";
+  elemento.addEventListener("click", () => abrirLightbox(index));
+});
 </script>
 
 </body>

@@ -1063,7 +1063,6 @@ app.get("/curso_desarrolloprofesional", async (req, res) => {
 
 
 
-
 app.get('/', (req, res) => {
     res.redirect('/login');
 });

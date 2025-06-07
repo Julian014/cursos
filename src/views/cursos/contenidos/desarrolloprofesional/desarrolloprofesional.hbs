@@ -460,18 +460,16 @@
 
 
 <script>
-  // Variables globales modificadas para soportar múltiples módulos
-  let pasoActual = 0;
-  let moduloActivo = 1;
-  let pasos = [];
-  let indicadores = null;
-
-
-
-
+// Variables globales
+let pasoActual = 0;
+let moduloActivo = 1;
+let pasos = [];
+let indicadores = null;
+let evaluacionAprobada = false;
 
 function inicializarModulo(num) {
     moduloActivo = num;
+    evaluacionAprobada = false; // Resetear estado de evaluación al cambiar de módulo
     const modulo = document.querySelector(`#modulo${num}`);
     pasos = modulo.querySelectorAll('.paso');
     indicadores = document.getElementById(`indicadoresModulo${num}`);
@@ -510,8 +508,9 @@ function inicializarModulo(num) {
         });
     }
     
-    // Actualizar controles
+    // Actualizar controles e indicadores
     actualizarControles();
+    actualizarIndicadores();
 }
 
 function actualizarIndicadores() {
@@ -519,151 +518,121 @@ function actualizarIndicadores() {
     
     const circulos = indicadores.querySelectorAll('.circulo');
     circulos.forEach((circulo, index) => {
-        if (index === pasoActual) {
-            circulo.classList.add('activo');
-        } else {
-            circulo.classList.remove('activo');
-        }
+        circulo.classList.toggle('activo', index === pasoActual);
     });
 }
 
-function inicializarModulo(num) {
-    moduloActivo = num;
-    const modulo = document.querySelector(`#modulo${num}`);
-    pasos = modulo.querySelectorAll('.paso');
-    indicadores = document.getElementById(`indicadoresModulo${num}`);
+function mostrarPaso(index) {
+    if(index < 0 || index >= pasos.length) return;
     
-    // Reiniciar paso actual
-    pasoActual = 0;
-    
-    // Ocultar el video final si está visible
-    const videoFinal = modulo.querySelector(`#videoFinalPaso${num}`);
-    if(videoFinal) {
-        videoFinal.style.display = 'none';
-        videoFinal.classList.remove('activo');
-    }
-    
-    // Mostrar solo el primer paso
-    pasos.forEach((paso, index) => {
-        if(index === 0) {
-            paso.style.display = 'block';
-            paso.classList.add('activo');
-        } else {
-            paso.style.display = 'none';
-            paso.classList.remove('activo');
-        }
+    // Ocultar todos los pasos
+    pasos.forEach(paso => {
+        paso.style.display = 'none';
+        paso.classList.remove('activo');
     });
     
-    // Crear círculos indicadores dinámicamente si no existen
-    if (indicadores && indicadores.children.length === 0) {
-        pasos.forEach((_, index) => {
-            // No crear indicador para el video final
-            if(!pasos[index].id || !pasos[index].id.includes('videoFinalPaso')) {
-                const circulo = document.createElement('div');
-                circulo.classList.add('circulo');
-                indicadores.appendChild(circulo);
-            }
-        });
-    }
+    // Mostrar el paso actual
+    pasos[index].style.display = 'block';
+    pasos[index].classList.add('activo');
+    pasoActual = index;
     
     // Actualizar controles e indicadores
     actualizarControles();
     actualizarIndicadores();
 }
 
-function mostrarPaso(index) {
-    // Ocultar todos los pasos primero
-    pasos.forEach(paso => {
-        paso.style.display = 'none';
-        paso.classList.remove('activo');
-    });
-    
-    // Mostrar solo el paso actual
-    if(index >= 0 && index < pasos.length) {
-        pasos[index].style.display = 'block';
-        pasos[index].classList.add('activo');
-        pasoActual = index;
-        actualizarControles();
-        actualizarIndicadores();
-    }
-}
 function actualizarControles() {
     const btnAnterior = document.querySelector(`#modulo${moduloActivo} .controles button:first-child`);
     const btnSiguiente = document.querySelector(`#modulo${moduloActivo} .controles button:last-child`);
     
     if(btnAnterior) btnAnterior.disabled = pasoActual === 0;
+    
     if(btnSiguiente) {
-        // Deshabilitar siguiente si es el video final
-        const esVideoFinal = pasos[pasoActual].id && pasos[pasoActual].id.includes('videoFinalPaso');
-        btnSiguiente.disabled = pasoActual >= pasos.length - 1 || esVideoFinal;
+        const esVideoFinal = pasos[pasoActual].id?.includes('videoFinalPaso');
+        const esEvaluacion = pasos[pasoActual].querySelector('.evaluacion') !== null;
+        
+        btnSiguiente.disabled = pasoActual >= pasos.length - 1 || esVideoFinal || 
+                              (esEvaluacion && !evaluacionAprobada);
     }
 }
-  function siguientePaso() {
+
+function siguientePaso() {
     if (pasoActual < pasos.length - 1) {
-      mostrarPaso(pasoActual + 1);
+        mostrarPaso(pasoActual + 1);
     }
-  }
+}
 
-  function anteriorPaso() {
+function anteriorPaso() {
     if (pasoActual > 0) {
-      mostrarPaso(pasoActual - 1);
+        mostrarPaso(pasoActual - 1);
     }
-  }
+}
 
-  function responderEvaluacion(btn, correcto) {
+function responderEvaluacion(btn, correcto) {
     if (correcto) {
-      // Ocultar la evaluación
-      btn.closest('.paso').style.display = 'none';
-      
-      // Mostrar el paso de video final
-      const moduloActual = btn.closest('[id^="modulo"]').id.replace('modulo', '');
-      const videoFinal = document.getElementById(`videoFinalPaso${moduloActual}`);
-      videoFinal.style.display = 'block';
-      
-      // Marcar el módulo como completado
-      localStorage.setItem(`modulo${moduloActual}Completado`, 'true');
+        evaluacionAprobada = true;
+        const moduloActual = btn.closest('[id^="modulo"]').id.replace('modulo', '');
+        
+        // Ocultar evaluación
+        btn.closest('.paso').style.display = 'none';
+        
+        // Mostrar video final
+        const videoFinal = document.getElementById(`videoFinalPaso${moduloActual}`);
+        if(videoFinal) {
+            videoFinal.style.display = 'block';
+            videoFinal.classList.add('activo');
+        }
+        
+        // Actualizar controles
+        actualizarControles();
+        
+        // Marcar módulo como completado
+        localStorage.setItem(`modulo${moduloActual}Completado`, 'true');
     } else {
-      alert('Respuesta incorrecta, intenta de nuevo');
+        alert('Respuesta incorrecta, intenta de nuevo');
     }
-  }
+}
 
-  function completarModulo(num) {
-    // Habilitar el siguiente módulo
-    document.getElementById(`btnModulo${num + 1}`).disabled = false;
+function completarModulo(num) {
+    if (!evaluacionAprobada) {
+        alert('Debes completar la evaluación correctamente antes de pasar al siguiente módulo');
+        return;
+    }
     
-    // Ir al siguiente módulo
-    irAModulo(num + 1);
+    if (num < 4) {
+        document.getElementById(`btnModulo${num + 1}`).disabled = false;
+        irAModulo(num + 1);
+    }
     
-    // Guardar en localStorage
     localStorage.setItem(`modulo${num}Completado`, 'true');
-  }
+    evaluacionAprobada = false;
+}
 
-  function irAModulo(num) {
+function irAModulo(num) {
     document.querySelectorAll('[id^="modulo"]').forEach(m => m.style.display = 'none');
     const modulo = document.getElementById(`modulo${num}`);
-    modulo.style.display = 'block';
-    modulo.scrollIntoView({ behavior: 'smooth' });
-    
-    // Inicializar el módulo al que vamos
-    inicializarModulo(num);
-  }
+    if(modulo) {
+        modulo.style.display = 'block';
+        modulo.scrollIntoView({ behavior: 'smooth' });
+        inicializarModulo(num);
+    }
+}
 
-  // Mostrar solo el módulo 1 al inicio e inicializarlo
-  document.addEventListener('DOMContentLoaded', function() {
+// Inicialización
+document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('[id^="modulo"]').forEach((m, i) => {
-      m.style.display = i === 0 ? 'block' : 'none';
+        m.style.display = i === 0 ? 'block' : 'none';
     });
     
-    // Inicializar el módulo 1
     inicializarModulo(1);
     
-    // Verificar módulos completados
+    // Habilitar módulos completados
     for (let i = 1; i <= 4; i++) {
-      if (localStorage.getItem(`modulo${i}Completado`) === 'true') {
-        document.getElementById(`btnModulo${i + 1}`).disabled = false;
-      }
+        if (localStorage.getItem(`modulo${i}Completado`) === 'true') {
+            document.getElementById(`btnModulo${i + 1}`)?.removeAttribute('disabled');
+        }
     }
-  });
+});
 </script>
 
 

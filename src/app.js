@@ -1037,6 +1037,31 @@ app.get("/editar_usuario_admin/:id", async (req, res) => {
 
 
 
+app.get("/curso_desarrolloprofesional", async (req, res) => {
+    if (req.session.loggedin === true) {
+        try {
+            const userId = req.session.userId;
+            const nombreUsuario = req.session.name || req.session.user.name;
+            console.log(`El usuario ${nombreUsuario} está autenticado.`);
+            req.session.nombreGuardado = nombreUsuario;
+
+            // Renderiza la vista y pasa los datos necesarios
+            res.render("cursos/contenidos/desarrolloprofesional/desarrolloprofesional.hbs", {
+                name: nombreUsuario,
+                userId,
+            });
+        } catch (error) {
+            console.error('Error al obtener el conteo de datos:', error);
+            res.status(500).send('Error al cargar el menú administrativo');
+        }
+    } else {
+        res.redirect("/login");
+    }
+});
+
+
+
+
 
 
 app.get('/', (req, res) => {

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Curso: Desarrollo Profesional</title>
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to right, #f7f9fc, #e3ebf6);
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    min-height: 100vh;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+  }
+
+  h2 {
+    font-size: 2rem;
+    margin: 1.5rem 0;
+    color: #34495e;
+  }
+
+  h3, h4 {
+    margin: 1rem 0;
+    color: #2c3e50;
+  }
+
+  #menuModulos {
+    background: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+  }
+
+  #menuModulos ul {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  #menuModulos button {
+    background: #3498db;
+    color: white;
+    padding: 0.6rem 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s ease;
+  }
+
+  #menuModulos button:hover {
+    background: #2980b9;
+  }
+
+  .modulo-slide {
+    width: 100%;
+    max-width: 960px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+    position: relative;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    padding: 1rem;
+    margin: auto;
+  }
+
+  .paso {
+    display: none;
+    width: 100%;
+    height: auto;
+    text-align: center;
+  }
+
+  .paso.activo {
+    display: block;
+  }
+
+  .paso img,
+  .paso video {
+    max-width: 100%;
+    max-height: 80vh;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
+
+  .controles {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .controles button {
+    padding: 0.7rem 1.2rem;
+    font-size: 1rem;
+    background: #2ecc71;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  .controles button:hover {
+    background: #27ae60;
+  }
+
+  .evaluacion {
+    padding: 2rem;
+    background: #ecf0f1;
+    border-radius: 10px;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  .evaluacion button {
+    margin: 0.5rem;
+    background: #e67e22;
+    color: white;
+    padding: 0.6rem 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  .evaluacion button:hover {
+    background: #d35400;
+  }
+
+  #modulo1, #modulo2, #modulo3, #modulo4 {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+</style>
+
+</head>
+<body>
+
+  <h1>Curso: Desarrollo Profesional</h1>
+  <div id="menuModulos">
+    <h3>Módulos del Curso</h3>
+    <ul>
+      <li><button onclick="irAModulo(1)">Módulo 1</button></li>
+      <li><button onclick="irAModulo(2)">Módulo 2</button></li>
+      <li><button onclick="irAModulo(3)">Módulo 3</button></li>
+      <li><button onclick="irAModulo(4)">Módulo 4</button></li>
+    </ul>
+  </div>
+
+<!-- Módulo 1 -->
+<div id="modulo1">
+  <h2>Módulo 1: Introducción al Desarrollo Profesional</h2>
+  <div class="modulo-slide">
+<div class="paso activo">
+      <img src="material_cursos/curso_desarrolloprofesional/Modulo1-1.png" alt="Imagen 1">
+    </div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-2.png" alt="Imagen 2"></div>
+    <div class="paso">
+      <video id="videoModulo1" src="material_cursos/curso_desarrolloprofesional/Modulo1-3.mp4" controls></video>
+    </div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-4.png" alt="Imagen 4"></div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-5.png" alt="Imagen 5"></div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-6.png" alt="Imagen 6"></div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-7.png" alt="Imagen 7"></div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-8.png" alt="Imagen 8"></div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-9.png" alt="Imagen 9"></div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-10.png" alt="Imagen 10"></div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-11.png" alt="Imagen 11"></div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-12.png" alt="Imagen 12"></div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-13.png" alt="Imagen 13"></div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-14.png" alt="Imagen 14"></div>
+
+    <div class="paso">
+      <div class="evaluacion">
+        <h3>Actividad del módulo</h3>
+        <p>¿Qué es desarrollo profesional?</p>
+        <button onclick="responderEvaluacion(this, true)">Mejorar habilidades</button>
+        <button onclick="responderEvaluacion(this, false)">No hacer nada</button>
+        <button onclick="responderEvaluacion(this, false)">Mirar memes</button>
+      </div>
+    </div>
+
+    <div class="paso" id="videoFinalPaso1" style="display: none;">
+      <h4>¡Felicidades! Has aprobado el módulo</h4>
+      <video src="material_cursos/curso_desarrolloprofesional/Modulo1-final.mp4" controls></video>
+      <button onclick="completarModulo(1)">Ir al Módulo 2</button>
+    </div>
+  </div>
+  <div class="controles">
+    <button onclick="anteriorPaso()">Anterior</button>
+    <button id="btnSiguiente1" onclick="siguientePaso()">Siguiente</button>
+  </div>
+</div>
+
+<!-- Módulo 2 -->
+<div id="modulo2">
+  <h2>Módulo 2: Trabajo en equipo</h2>
+  <div class="modulo-slide">
+<div class="paso activo">
+      <img src="material_cursos/curso_desarrolloprofesional/Modulo1-1.png" alt="Imagen 1">
+    </div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-2.png" alt="Imagen 2"></div>
+    <div class="paso">
+      <video id="videoModulo2" src="material_cursos/curso_desarrolloprofesional/Modulo1-3.mp4" controls></video>
+    </div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-4.png" alt="Imagen 4"></div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-5.png" alt="Imagen 5"></div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-6.png" alt="Imagen 6"></div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-7.png" alt="Imagen 7"></div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-8.png" alt="Imagen 8"></div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-9.png" alt="Imagen 9"></div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-10.png" alt="Imagen 10"></div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-11.png" alt="Imagen 11"></div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-12.png" alt="Imagen 12"></div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-13.png" alt="Imagen 13"></div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-14.png" alt="Imagen 14"></div>
+
+    <div class="paso">
+      <div class="evaluacion">
+        <h3>Actividad del módulo</h3>
+        <p>¿Qué es desarrollo profesional?</p>
+        <button onclick="responderEvaluacion(this, true)">Mejorar habilidades</button>
+        <button onclick="responderEvaluacion(this, false)">No hacer nada</button>
+        <button onclick="responderEvaluacion(this, false)">Mirar memes</button>
+      </div>
+    </div>
+
+    <div class="paso" id="videoFinalPaso2" style="display: none;">
+      <h4>¡Felicidades! Has aprobado el módulo</h4>
+      <video src="material_cursos/curso_desarrolloprofesional/Modulo1-final.mp4" controls></video>
+      <button onclick="completarModulo(2)">Ir al Módulo 3</button>
+    </div>
+  </div>
+  <div class="controles">
+    <button onclick="anteriorPaso()">Anterior</button>
+    <button id="btnSiguiente2" onclick="siguientePaso()">Siguiente</button>
+  </div>
+</div>
+
+<!-- Módulo 3 -->
+<div id="modulo3">
+  <h2>Módulo 3: [Título aquí]</h2>
+  <div class="modulo-slide">
+<div class="paso activo">
+      <img src="material_cursos/curso_desarrolloprofesional/Modulo1-1.png" alt="Imagen 1">
+    </div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-2.png" alt="Imagen 2"></div>
+    <div class="paso">
+      <video id="videoModulo3" src="material_cursos/curso_desarrolloprofesional/Modulo1-3.mp4" controls></video>
+    </div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-4.png" alt="Imagen 4"></div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-5.png" alt="Imagen 5"></div>
+
+    <div class="paso">
+      <div class="evaluacion">
+        <h3>Actividad del módulo</h3>
+        <p>¿Qué es desarrollo profesional?</p>
+        <button onclick="responderEvaluacion(this, true)">Mejorar habilidades</button>
+        <button onclick="responderEvaluacion(this, false)">No hacer nada</button>
+        <button onclick="responderEvaluacion(this, false)">Mirar memes</button>
+      </div>
+    </div>
+
+    <div class="paso" id="videoFinalPaso3" style="display: none;">
+      <h4>¡Felicidades! Has aprobado el módulo</h4>
+      <video src="material_cursos/curso_desarrolloprofesional/Modulo1-final.mp4" controls></video>
+      <button onclick="completarModulo(3)">Ir al Módulo 4</button>
+    </div>
+  </div>
+  <div class="controles">
+    <button onclick="anteriorPaso()">Anterior</button>
+    <button id="btnSiguiente3" onclick="siguientePaso()">Siguiente</button>
+  </div>
+</div>
+
+<!-- Módulo 4 -->
+<div id="modulo4">
+  <h2>Módulo 4: [Título aquí]</h2>
+  <div class="modulo-slide">
+<div class="paso activo">
+      <img src="material_cursos/curso_desarrolloprofesional/Modulo1-1.png" alt="Imagen 1">
+    </div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-2.png" alt="Imagen 2"></div>
+    <div class="paso">
+      <video id="videoModulo4" src="material_cursos/curso_desarrolloprofesional/Modulo1-3.mp4" controls></video>
+    </div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-4.png" alt="Imagen 4"></div>
+    <div class="paso"><img src="material_cursos/curso_desarrolloprofesional/modulo1-5.png" alt="Imagen 5"></div>
+
+    <div class="paso">
+      <div class="evaluacion">
+        <h3>Actividad del módulo</h3>
+        <p>¿Qué es desarrollo profesional?</p>
+        <button onclick="responderEvaluacion(this, true)">Mejorar habilidades</button>
+        <button onclick="responderEvaluacion(this, false)">No hacer nada</button>
+        <button onclick="responderEvaluacion(this, false)">Mirar memes</button>
+      </div>
+    </div>
+
+    <div class="paso" id="videoFinalPaso4" style="display: none;">
+      <h4>¡Felicidades! Has aprobado el módulo</h4>
+      <video src="material_cursos/curso_desarrolloprofesional/Modulo1-final.mp4" controls></video>
+    </div>
+  </div>
+  <div class="controles">
+    <button onclick="anteriorPaso()">Anterior</button>
+<button id="btnSiguiente4" onclick="siguientePaso()">Siguiente</button>
+  </div>
+</div>
+
+  <script>
+    let moduloActual = 1;
+    let pasoActual = 0;
+
+function irAModulo(n) {
+  document.querySelectorAll("[id^='modulo']").forEach(m => m.style.display = 'none');
+  document.getElementById(`modulo${n}`).style.display = 'block';
+  moduloActual = n;
+  pasoActual = 0;
+  actualizarPaso();
+  
+  // Resetear el texto del botón a "Siguiente" cuando se cambia de módulo
+  document.getElementById(`btnSiguiente${n}`).textContent = 'Siguiente';
+}
+
+    function actualizarPaso() {
+      const pasos = document.querySelectorAll(`#modulo${moduloActual} .paso`);
+      pasos.forEach(p => p.classList.remove('activo'));
+      if (pasoActual < pasos.length) {
+        pasos[pasoActual].classList.add('activo');
+      }
+    }
+function siguientePaso() {
+  const pasos = document.querySelectorAll(`#modulo${moduloActual} .paso`);
+  if (pasoActual < pasos.length - 1) {
+    pasoActual++;
+    actualizarPaso();
+    
+    // Verificar si estamos en el último paso del módulo 4
+    if (moduloActual === 4 && pasoActual === pasos.length - 1) {
+      document.getElementById(`btnSiguiente${moduloActual}`).textContent = 'Finalizar';
+    }
+  } else if (moduloActual === 4 && pasoActual === pasos.length - 1) {
+    // Aquí puedes agregar lógica para cuando se finaliza el curso
+    alert('¡Curso completado con éxito!');
+    // O redirigir a otra página, etc.
+  }
+}
+    function anteriorPaso() {
+      if (pasoActual > 0) {
+        pasoActual--;
+        actualizarPaso();
+      }
+    }
+
+    function responderEvaluacion(btn, correcta) {
+      if (correcta) {
+        const pasoFinal = document.getElementById(`videoFinalPaso${moduloActual}`);
+        if (pasoFinal) {
+          pasoFinal.style.display = 'block';
+        }
+        siguientePaso();
+      } else {
+        alert('Respuesta incorrecta. Intenta de nuevo.');
+      }
+    }
+
+    function completarModulo(modulo) {
+      localStorage.setItem(`modulo${modulo}Completado`, 'true');
+      irAModulo(modulo + 1);
+    }
+
+    // Mostrar el primer módulo por defecto
+    window.onload = () => {
+      irAModulo(1);
+    };
+  </script>
+
+
+</body>
+</html>

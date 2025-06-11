@@ -1,0 +1,159 @@
+<style>
+  .curso-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 20px;
+    background-color: #fdfdfd;
+  }
+
+  .curso-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  .curso-icon {
+    background-color: #4f46e5; /* Indigo */
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-outline-primary {
+    border-radius: 12px;
+    font-weight: 500;
+  }
+
+  .btn-success {
+    border-radius: 12px;
+    font-weight: 500;
+  }
+
+  .card-title {
+    font-size: 1.4rem;
+  }
+
+  .card-text {
+    font-size: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .curso-card {
+      margin-top: 1rem;
+    }
+  }
+</style>
+
+
+<div class="container mt-5">
+  <h2 class="mb-4 text-center text-primary">🎓 Bienvenido, {{name}}</h2>
+
+  <div class="row justify-content-center">
+
+    <!-- Curso 1: Desarrollo Profesional -->
+    <div class="col-md-6 col-lg-5">
+      <div class="curso-card card mb-4 p-3 border-0 shadow-lg">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-3">
+            <div class="curso-icon rounded-circle text-white mr-3">
+              🧠
+            </div>
+            <h5 class="card-title mb-0 text-dark font-weight-bold">Desarrollo Profesional</h5>
+          </div>
+
+          <p class="card-text text-muted">
+            Fortalece tus habilidades para crecer profesionalmente y destacar en tu carrera.
+          </p>
+
+          <div class="text-center mt-4">
+            <a href="/curso_desarrolloprofesional" class="btn btn-outline-primary btn-lg btn-block mb-2">
+              Ingresar al Curso
+            </a>
+
+            {{#if curso1Aprobado}}
+              <a href="/certificado?curso=/curso_desarrolloprofesional" class="btn btn-success btn-block">
+                📄 Descargar Certificado
+              </a>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+   <!-- Curso 2: Desarrollo Profesional -->
+    <div class="col-md-6 col-lg-5">
+      <div class="curso-card card mb-4 p-3 border-0 shadow-lg">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-3">
+            <div class="curso-icon rounded-circle text-white mr-3">
+              🧠
+            </div>
+            <h5 class="card-title mb-0 text-dark font-weight-bold">La magia de la comunicacion asertiva en el entorno laboral</h5>
+          </div>
+
+          <p class="card-text text-muted">
+            Fortalece tus habilidades para crecer profesionalmente y destacar en tu carrera.
+          </p>
+
+          <div class="text-center mt-4">
+            <a href="/lamagiadelacomunicacion" class="btn btn-outline-primary btn-lg btn-block mb-2">
+              Ingresar al Curso
+            </a>
+
+            {{#if curso1Aprobado}}
+              <a href="/certificado?curso=/lamagiadelacomunicacion" class="btn btn-success btn-block">
+                📄 Descargar Certificado
+              </a>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+   <!-- Curso 3: Desarrollo Profesional -->
+    <div class="col-md-6 col-lg-5">
+      <div class="curso-card card mb-4 p-3 border-0 shadow-lg">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-3">
+            <div class="curso-icon rounded-circle text-white mr-3">
+              🧠
+            </div>
+            <h5 class="card-title mb-0 text-dark font-weight-bold">Empatia y claves para una comunicacion Profesional efectiva</h5>
+          </div>
+
+          <p class="card-text text-muted">
+            Fortalece tus habilidades para crecer profesionalmente y destacar en tu carrera.
+          </p>
+
+          <div class="text-center mt-4">
+            <a href="/curso_desarrolloprofesional" class="btn btn-outline-primary btn-lg btn-block mb-2">
+              Ingresar al Curso
+            </a>
+
+            {{#if curso1Aprobado}}
+              <a href="/certificado?curso=/curso_desarrolloprofesional" class="btn btn-success btn-block">
+                📄 Descargar Certificado
+              </a>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+    
+
+  </div>
+</div>

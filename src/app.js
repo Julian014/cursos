@@ -1035,6 +1035,63 @@ app.get("/editar_usuario_admin/:id", async (req, res) => {
   }
 });
 
+
+
+app.get("/menu_admin_cursos", async (req, res) => {
+  if (req.session.loggedin === true) {
+    try {
+      const userId = req.session.userId;
+      const nombreUsuario = req.session.name;
+      req.session.nombreGuardado = nombreUsuario;
+
+      // Validar si el usuario ya aprobó cada curso
+      const [curso1] = await pool.query(
+        'SELECT 1 FROM cursosaprobados WHERE id_usuario = ? AND curso = ? LIMIT 1',
+        [userId, '/curso_desarrolloprofesional']
+      );
+
+      // Si agregas más cursos, puedes hacer más consultas similares
+
+      res.render("cursos/paginaadmin_cursos", {
+        layout: 'layouts/nav_admin.hbs',
+        name: nombreUsuario,
+        userId,
+        curso1Aprobado: curso1.length > 0,
+        // curso2Aprobado: curso2.length > 0, // si agregas más
+      });
+    } catch (error) {
+      console.error('Error al obtener los datos del curso:', error);
+      res.status(500).send('Error al cargar el menú administrativo');
+    }
+  } else {
+    res.redirect("/login");
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 app.get("/curso_desarrolloprofesional", async (req, res) => {
   if (req.session.loggedin === true) {
     try {
@@ -1053,6 +1110,44 @@ app.get("/curso_desarrolloprofesional", async (req, res) => {
       const aprobado = cursoAprobado[0].total > 0;
 
       res.render("cursos/contenidos/desarrolloprofesional/desarrolloprofesional", {
+        layout: "layouts/nav_admin",
+        name: nombreUsuario,
+        userId,
+        cursoAprobado: aprobado
+      });
+
+    } catch (error) {
+      console.error('❌ Error al verificar curso aprobado:', error);
+      res.status(500).send('Error al cargar la página del curso');
+    }
+
+  } else {
+    res.redirect("/login");
+  }
+});
+
+
+
+
+
+app.get("/lamagiadelacomunicacion", async (req, res) => {
+  if (req.session.loggedin === true) {
+    try {
+      const userId = req.session.userId;
+      const nombreUsuario = req.session.name || req.session.user.name;
+      const cursoRuta = "/lamagiadelacomunicacion";
+
+      console.log(`🔐 El usuario ${nombreUsuario} está autenticado.`);
+
+      // Verificar si ya aprobó el curso
+      const [cursoAprobado] = await pool.query(
+        'SELECT COUNT(*) AS total FROM cursosaprobados WHERE id_usuario = ? AND curso = ?',
+        [userId, cursoRuta]
+      );
+
+      const aprobado = cursoAprobado[0].total > 0;
+
+      res.render("cursos/contenidos/lamagiadelacomunicacion/lamagiadelacomunicacion.hbs", {
         layout: "layouts/nav_admin",
         name: nombreUsuario,
         userId,

@@ -1101,7 +1101,6 @@ app.get("/curso_desarrolloprofesional", async (req, res) => {
 
       console.log(`🔐 El usuario ${nombreUsuario} está autenticado.`);
 
-      // Verificar si ya aprobó el curso
       const [cursoAprobado] = await pool.query(
         'SELECT COUNT(*) AS total FROM cursosaprobados WHERE id_usuario = ? AND curso = ?',
         [userId, cursoRuta]

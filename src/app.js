@@ -1062,6 +1062,33 @@ app.get("/curso_desarrolloprofesional", async (req, res) => {
 });
 
 
+app.post('/registrar_curso_aprobado', async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    const { curso } = req.body;
+
+    console.log('📥 Curso recibido:', curso);
+    console.log('👤 Usuario de sesión:', userId);
+
+    if (!userId || !curso) {
+      console.warn('⚠️ Datos incompletos');
+      return res.status(400).json({ error: 'Datos incompletos' });
+    }
+
+const [resultado] = await pool.query(
+  'INSERT INTO cursosaprobados (id_usuario, curso, fecha_aprobacion) VALUES (?, ?, CONVERT_TZ(NOW(), "+00:00", "-05:00"))',
+  [userId, curso]
+);
+
+
+    console.log('✅ Curso registrado exitosamente:', resultado);
+    res.status(200).json({ mensaje: 'Curso aprobado registrado con éxito' });
+  } catch (err) {
+    console.error('❌ Error registrando curso:', err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
 
 
 

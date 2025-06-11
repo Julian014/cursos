@@ -1035,31 +1035,40 @@ app.get("/editar_usuario_admin/:id", async (req, res) => {
   }
 });
 
-
-
 app.get("/curso_desarrolloprofesional", async (req, res) => {
-    if (req.session.loggedin === true) {
-        try {
-            const userId = req.session.userId;
-            const nombreUsuario = req.session.name || req.session.user.name;
-            console.log(`El usuario ${nombreUsuario} está autenticado.`);
-            req.session.nombreGuardado = nombreUsuario;
+  if (req.session.loggedin === true) {
+    try {
+      const userId = req.session.userId;
+      const nombreUsuario = req.session.name || req.session.user.name;
+      const cursoRuta = "/curso_desarrolloprofesional";
 
-            // Renderiza la vista y pasa los datos necesarios
-            res.render("cursos/contenidos/desarrolloprofesional/desarrolloprofesional.hbs", {
-                      layout: "layouts/nav_admin.hbs",
+      console.log(`🔐 El usuario ${nombreUsuario} está autenticado.`);
 
-              name: nombreUsuario,
-                userId,
-            });
-        } catch (error) {
-            console.error('Error al obtener el conteo de datos:', error);
-            res.status(500).send('Error al cargar el menú administrativo');
-        }
-    } else {
-        res.redirect("/login");
+      // Verificar si ya aprobó el curso
+      const [cursoAprobado] = await pool.query(
+        'SELECT COUNT(*) AS total FROM cursosaprobados WHERE id_usuario = ? AND curso = ?',
+        [userId, cursoRuta]
+      );
+
+      const aprobado = cursoAprobado[0].total > 0;
+
+      res.render("cursos/contenidos/desarrolloprofesional/desarrolloprofesional", {
+        layout: "layouts/nav_admin",
+        name: nombreUsuario,
+        userId,
+        cursoAprobado: aprobado
+      });
+
+    } catch (error) {
+      console.error('❌ Error al verificar curso aprobado:', error);
+      res.status(500).send('Error al cargar la página del curso');
     }
+
+  } else {
+    res.redirect("/login");
+  }
 });
+
 
 
 app.post('/registrar_curso_aprobado', async (req, res) => {
@@ -1075,14 +1084,26 @@ app.post('/registrar_curso_aprobado', async (req, res) => {
       return res.status(400).json({ error: 'Datos incompletos' });
     }
 
-const [resultado] = await pool.query(
-  'INSERT INTO cursosaprobados (id_usuario, curso, fecha_aprobacion) VALUES (?, ?, CONVERT_TZ(NOW(), "+00:00", "-05:00"))',
-  [userId, curso]
-);
+    // Verifica si ya existe el registro
+    const [existente] = await pool.query(
+      'SELECT * FROM cursosaprobados WHERE id_usuario = ? AND curso = ?',
+      [userId, curso]
+    );
 
+    if (existente.length > 0) {
+      console.log('⚠️ Curso ya registrado anteriormente.');
+      return res.status(200).json({ mensaje: 'Curso ya estaba registrado previamente' });
+    }
+
+    // Si no existe, lo registra
+    const [resultado] = await pool.query(
+      'INSERT INTO cursosaprobados (id_usuario, curso, fecha_aprobacion) VALUES (?, ?, CONVERT_TZ(NOW(), "+00:00", "-05:00"))',
+      [userId, curso]
+    );
 
     console.log('✅ Curso registrado exitosamente:', resultado);
     res.status(200).json({ mensaje: 'Curso aprobado registrado con éxito' });
+
   } catch (err) {
     console.error('❌ Error registrando curso:', err);
     res.status(500).json({ error: 'Error del servidor' });
@@ -1090,6 +1111,43 @@ const [resultado] = await pool.query(
 });
 
 
+
+
+app.get('/certificado', async (req, res) => {
+  const userId = req.session.userId;
+  const curso = req.query.curso;
+
+  if (!userId || !curso) {
+    return res.status(400).send('Faltan datos para generar el certificado');
+  }
+
+  try {
+    const [result] = await pool.query(
+      'SELECT fecha_aprobacion FROM cursosaprobados WHERE id_usuario = ? AND curso = ? ORDER BY fecha_aprobacion DESC LIMIT 1',
+      [userId, curso]
+    );
+
+    if (!result || result.length === 0) {
+      return res.status(404).send('No se encontró aprobación para este curso');
+    }
+
+    const fecha = new Date(result[0].fecha_aprobacion);
+
+    res.render('cursos/contenidos/desarrolloprofesional/certificado', {
+      usuario: req.session.name || 'Usuario',
+      curso: curso.replace('/curso_', '').replace(/_/g, ' ').trim(),
+      fecha: fecha.toLocaleDateString('es-CO', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      })
+    });
+
+  } catch (error) {
+    console.error('❌ Error al cargar certificado:', error);
+    res.status(500).send('Error al generar el certificado');
+  }
+});
 
 
 app.get('/', (req, res) => {

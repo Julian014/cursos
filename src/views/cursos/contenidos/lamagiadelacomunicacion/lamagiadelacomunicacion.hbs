@@ -256,6 +256,15 @@ html, body {
 </head>
 
 <body>
+{{#if cursoAprobado}}
+  <div style="margin-top: 2rem; text-align: center;">
+    <a href="/certificado?curso=/curso_desarrolloprofesional" target="_blank"
+       style="padding: 10px 20px; background-color: #10b981; color: white; text-decoration: none; border-radius: 8px;">
+      🎓 Descargar certificado
+    </a>
+  </div>
+{{/if}}
+<br>
 
   <h1>Curso: Desarrollo Profesional</h1>
   <button onclick="toggleMenuModulos()" style="margin-bottom: 1rem; padding: 0.6rem 1.2rem; border-radius: 8px; border: none; background: var(--primary); color: white; cursor: pointer;">
@@ -429,10 +438,18 @@ html, body {
         </div>
       </div>
 
-      <div class="paso" id="videoFinalPaso4" style="display: none;">
-        <h4>¡Felicidades! Has aprobado el módulo</h4>
-        <video src="material_cursos/curso_desarrolloprofesional/Modulo1-final.mp4" controls></video>
-      </div>
+<div class="paso" id="videoFinalPaso4" style="display: none;">
+  <h4>¡Felicidades! Has aprobado el módulo</h4>
+  <video src="material_cursos/curso_desarrolloprofesional/Modulo1-final.mp4" controls></video>
+
+  <!-- ✅ Botón para registrar el curso -->
+  <button onclick="finalizarCurso()" 
+          style="margin-top: 1rem; background: #10b981; color: white; padding: 0.6rem 1.2rem; 
+                 border: none; border-radius: 8px; font-size: 1rem; cursor: pointer;">
+    🎓 Finalizar curso y registrar certificado
+  </button>
+</div>
+
     </div>
     <div class="controles">
       <button onclick="anteriorPaso()">Anterior</button>
@@ -693,6 +710,35 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+
+
+
+function finalizarCurso() {
+  const curso = window.location.pathname;
+
+  console.log("📤 Enviando finalización de curso:", curso);
+
+  fetch('/registrar_curso_aprobado', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ curso })
+  })
+  .then(res => res.json())
+.then(data => {
+  console.log('✅ Curso registrado en BD:', data);
+  // Redirigir al certificado automáticamente
+  window.location.href = `/certificado?curso=${encodeURIComponent(window.location.pathname)}`;
+})
+
+  .catch(err => {
+    console.error('❌ Error al registrar curso:', err);
+    alert('Ocurrió un error al registrar el curso. Intenta nuevamente.');
+  });
+}
+
 </script>
 
 
